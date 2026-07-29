@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/mobilevault}
+    username: ${DB_USERNAME:mobilevault}
+    password: ${DB_PASSWORD:mobilevault}
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    com.mobilevault.backend: DEBUG

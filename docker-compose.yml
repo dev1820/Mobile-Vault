@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: mobile-vault-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mobilevault
+      POSTGRES_USER: mobilevault
+      POSTGRES_PASSWORD: mobilevault
+    ports:
+      - "5433:5432"
+    volumes:
+      - mobile-vault-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  mobile-vault-postgres-data:
