@@ -6,6 +6,9 @@ import { Wordmark } from "../brand/Wordmark";
 const NAV_LINKS = [
   { to: "/", label: "Home", end: true },
   { to: "/catalog", label: "Catalog", end: false },
+  { to: "/procedure", label: "Sell Your Device", end: false },
+  { to: "/request", label: "Request a Device", end: false },
+  { to: "/terms", label: "T&C", end: false },
 ];
 
 function navLinkClass({ isActive }: { isActive: boolean }) {
@@ -25,15 +28,12 @@ export function Navbar() {
           <Wordmark size="sm" />
         </NavLink>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-5 lg:gap-7 md:flex">
           {NAV_LINKS.map((link) => (
             <NavLink key={link.to} to={link.to} end={link.end} className={navLinkClass}>
               {link.label}
             </NavLink>
           ))}
-          <NavLink to="/admin" className="text-xs uppercase tracking-wide text-vault-silver/50 hover:text-vault-gold">
-            Admin
-          </NavLink>
         </nav>
 
         <button
@@ -65,13 +65,6 @@ export function Navbar() {
               {link.label}
             </NavLink>
           ))}
-          <NavLink
-            to="/admin"
-            onClick={() => setOpen(false)}
-            className="rounded-md px-3 py-2.5 text-sm uppercase tracking-wide text-vault-silver/50"
-          >
-            Admin
-          </NavLink>
         </nav>
       )}
     </header>

@@ -6,6 +6,7 @@ import { CATEGORY_LABELS, CONDITION_LABELS } from "../types/product";
 import { ImageGallery } from "../components/product/ImageGallery";
 import { StatusBadge } from "../components/product/StatusBadge";
 import { ContactCTA } from "../components/product/ContactCTA";
+import { Button } from "../components/ui/Button";
 import { FullPageSpinner } from "../components/ui/Spinner";
 import { formatPrice } from "../utils/format";
 
@@ -93,8 +94,13 @@ export function ProductDetailPage() {
             </dl>
           )}
 
-          <div className="mt-auto pt-8">
-            <ContactCTA product={product} />
+          <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row">
+            {product.status === "AVAILABLE" && (
+              <Link to={`/checkout/${product.id}`} className="flex-1">
+                <Button className="w-full">Purchase Now</Button>
+              </Link>
+            )}
+            <ContactCTA product={product} className="flex-1" />
           </div>
         </div>
       </div>

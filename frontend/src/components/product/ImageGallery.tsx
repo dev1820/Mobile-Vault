@@ -1,8 +1,12 @@
 import { useState } from "react";
-import type { ProductImage } from "../../types/product";
 import { imageUrl } from "../../api/client";
 
-export function ImageGallery({ images, alt }: { images: ProductImage[]; alt: string }) {
+interface GalleryImage {
+  id: number;
+  url: string;
+}
+
+export function ImageGallery({ images, alt }: { images: GalleryImage[]; alt: string }) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   if (images.length === 0) {

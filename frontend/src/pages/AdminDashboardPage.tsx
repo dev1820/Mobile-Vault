@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { deleteProduct, getAdminProducts, setProductStatus } from "../api/productsApi";
-import type { Product } from "../types/product";
+import type { Product, ProductStatus } from "../types/product";
 import { ProductTable } from "../components/admin/ProductTable";
 import { ConfirmDialog } from "../components/admin/ConfirmDialog";
 import { Button } from "../components/ui/Button";
@@ -20,9 +20,8 @@ export function AdminDashboardPage() {
     refresh();
   }, []);
 
-  async function handleToggleStatus(product: Product) {
-    const nextStatus = product.status === "AVAILABLE" ? "SOLD" : "AVAILABLE";
-    const updated = await setProductStatus(product.id, nextStatus);
+  async function handleStatusChange(product: Product, status: ProductStatus) {
+    const updated = await setProductStatus(product.id, status);
     setProducts((prev) => prev?.map((p) => (p.id === updated.id ? updated : p)) ?? null);
   }
 
@@ -46,7 +45,7 @@ export function AdminDashboardPage() {
         {products === null ? (
           <FullPageSpinner />
         ) : (
-          <ProductTable products={products} onToggleStatus={handleToggleStatus} onDelete={setPendingDelete} />
+          <ProductTable products={products} onStatusChange={handleStatusChange} onDelete={setPendingDelete} />
         )}
       </div>
 

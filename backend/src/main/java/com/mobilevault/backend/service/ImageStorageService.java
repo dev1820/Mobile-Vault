@@ -21,6 +21,7 @@ public class ImageStorageService {
 
     private static final Logger log = LoggerFactory.getLogger(ImageStorageService.class);
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "webp");
+    private static final Set<String> ALLOWED_VIDEO_EXTENSIONS = Set.of("mp4", "mov", "m4v", "webm");
 
     private final Path uploadRoot;
 
@@ -34,15 +35,39 @@ public class ImageStorageService {
     }
 
     public String store(MultipartFile file, Long productId) {
+        return storeInternal(file, "products/" + productId, ALLOWED_EXTENSIONS);
+    }
+
+    public String storeSellRequestImage(MultipartFile file, Long sellRequestId) {
+        return storeInternal(file, "sell-requests/" + sellRequestId, ALLOWED_EXTENSIONS);
+    }
+
+    public String storeSellRequestVideo(MultipartFile file, Long sellRequestId) {
+        return storeInternal(file, "sell-requests/" + sellRequestId, ALLOWED_VIDEO_EXTENSIONS);
+    }
+
+    public String storeOrderPaymentProof(MultipartFile file, Long orderId) {
+        return storeInternal(file, "orders/" + orderId, ALLOWED_EXTENSIONS);
+    }
+
+    public String storeComplaintImage(MultipartFile file, Long complaintId) {
+        return storeInternal(file, "complaints/" + complaintId, ALLOWED_EXTENSIONS);
+    }
+
+    public String storeComplaintVideo(MultipartFile file, Long complaintId) {
+        return storeInternal(file, "complaints/" + complaintId, ALLOWED_VIDEO_EXTENSIONS);
+    }
+
+    private String storeInternal(MultipartFile file, String subDir, Set<String> allowedExtensions) {
         String originalFilename = StringUtils.cleanPath(file.getOriginalFilename() == null ? "" : file.getOriginalFilename());
         String extension = getExtension(originalFilename);
 
-        if (!ALLOWED_EXTENSIONS.contains(extension)) {
-            throw new BadRequestException("Unsupported image type: " + extension + ". Allowed: " + ALLOWED_EXTENSIONS);
+        if (!allowedExtensions.contains(extension)) {
+            throw new BadRequestException("Unsupported file type: " + extension + ". Allowed: " + allowedExtensions);
         }
 
         String storedFilename = UUID.randomUUID() + "." + extension;
-        String relativePath = "products/" + productId + "/" + storedFilename;
+        String relativePath = subDir + "/" + storedFilename;
 
         try {
             Path targetPath = uploadRoot.resolve(relativePath).normalize();

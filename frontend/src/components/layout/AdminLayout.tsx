@@ -1,7 +1,15 @@
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { Logo } from "../brand/Logo";
 import { useAuth } from "../../auth/AuthContext";
 import { Button } from "../ui/Button";
+
+const NAV_LINKS = [
+  { to: "/admin", label: "Listings", end: true },
+  { to: "/admin/orders", label: "Orders", end: false },
+  { to: "/admin/sell-requests", label: "Sell Requests", end: false },
+  { to: "/admin/device-requests", label: "Device Requests", end: false },
+  { to: "/admin/complaints", label: "Complaints", end: false },
+];
 
 export function AdminLayout() {
   const { username, logout } = useAuth();
@@ -28,6 +36,22 @@ export function AdminLayout() {
               Log out
             </Button>
           </div>
+        </div>
+        <div className="mx-auto flex max-w-6xl flex-wrap gap-x-6 gap-y-2 px-4 pb-3 sm:px-6">
+          {NAV_LINKS.map((link) => (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              end={link.end}
+              className={({ isActive }) =>
+                `text-sm uppercase tracking-wide transition-colors ${
+                  isActive ? "text-vault-gold" : "text-vault-silver hover:text-vault-white"
+                }`
+              }
+            >
+              {link.label}
+            </NavLink>
+          ))}
         </div>
       </header>
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">

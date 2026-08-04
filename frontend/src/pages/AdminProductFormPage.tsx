@@ -10,11 +10,12 @@ import {
   uploadImages,
   type ProductPayload,
 } from "../api/productsApi";
-import type { Product } from "../types/product";
+import type { Product, ProductStatus } from "../types/product";
 import { ProductForm } from "../components/admin/ProductForm";
 import { ImageUploader } from "../components/admin/ImageUploader";
 import { ConfirmDialog } from "../components/admin/ConfirmDialog";
 import { Button } from "../components/ui/Button";
+import { Select } from "../components/ui/Select";
 import { StatusBadge } from "../components/product/StatusBadge";
 import { FullPageSpinner } from "../components/ui/Spinner";
 
@@ -64,10 +65,9 @@ export function AdminProductFormPage() {
     setProduct(updated);
   }
 
-  async function handleToggleStatus() {
+  async function handleStatusChange(status: ProductStatus) {
     if (!product) return;
-    const nextStatus = product.status === "AVAILABLE" ? "SOLD" : "AVAILABLE";
-    const updated = await setProductStatus(product.id, nextStatus);
+    const updated = await setProductStatus(product.id, status);
     setProduct(updated);
   }
 
@@ -125,10 +125,17 @@ export function AdminProductFormPage() {
       )}
 
       {isEditMode && product && (
-        <div className="mt-6 flex flex-wrap gap-3 rounded-lg border border-vault-silver/10 bg-vault-charcoal p-6">
-          <Button variant="secondary" onClick={handleToggleStatus}>
-            {product.status === "AVAILABLE" ? "Mark as Sold" : "Mark as Available"}
-          </Button>
+        <div className="mt-6 flex flex-wrap items-end gap-3 rounded-lg border border-vault-silver/10 bg-vault-charcoal p-6">
+          <Select
+            label="Status"
+            value={product.status}
+            onChange={(e) => handleStatusChange(e.target.value as ProductStatus)}
+            className="w-auto"
+          >
+            <option value="AVAILABLE">Available</option>
+            <option value="RESERVED">Reserved</option>
+            <option value="SOLD">Sold</option>
+          </Select>
           <Button variant="danger" onClick={() => setConfirmingDelete(true)}>
             Delete Listing
           </Button>

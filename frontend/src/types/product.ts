@@ -1,6 +1,6 @@
 export type ProductCategory = "PHONE" | "ACCESSORY";
 
-export type ProductStatus = "AVAILABLE" | "SOLD";
+export type ProductStatus = "AVAILABLE" | "RESERVED" | "SOLD";
 
 export type ProductCondition =
   | "NEW"

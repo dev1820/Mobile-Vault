@@ -1,18 +1,37 @@
 import { Link } from "react-router-dom";
-import type { Product } from "../../types/product";
+import type { Product, ProductStatus } from "../../types/product";
 import { CATEGORY_LABELS } from "../../types/product";
 import { imageUrl } from "../../api/client";
 import { formatPrice } from "../../utils/format";
 import { StatusBadge } from "../product/StatusBadge";
 import { Button } from "../ui/Button";
+import { Select } from "../ui/Select";
 
 interface ProductTableProps {
   products: Product[];
-  onToggleStatus: (product: Product) => void;
+  onStatusChange: (product: Product, status: ProductStatus) => void;
   onDelete: (product: Product) => void;
 }
 
-export function ProductTable({ products, onToggleStatus, onDelete }: ProductTableProps) {
+const STATUS_OPTIONS: ProductStatus[] = ["AVAILABLE", "RESERVED", "SOLD"];
+
+function StatusSelect({ product, onStatusChange }: { product: Product; onStatusChange: ProductTableProps["onStatusChange"] }) {
+  return (
+    <Select
+      value={product.status}
+      onChange={(e) => onStatusChange(product, e.target.value as ProductStatus)}
+      className="w-auto py-1.5 text-xs"
+    >
+      {STATUS_OPTIONS.map((status) => (
+        <option key={status} value={status}>
+          {status.charAt(0) + status.slice(1).toLowerCase()}
+        </option>
+      ))}
+    </Select>
+  );
+}
+
+export function ProductTable({ products, onStatusChange, onDelete }: ProductTableProps) {
   if (products.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-vault-silver/20 py-16 text-center text-vault-silver">
@@ -53,14 +72,12 @@ export function ProductTable({ products, onToggleStatus, onDelete }: ProductTabl
               </td>
               <td className="py-3 pr-4">
                 <div className="flex justify-end gap-2">
+                  <StatusSelect product={product} onStatusChange={onStatusChange} />
                   <Link to={`/admin/products/${product.id}/edit`}>
                     <Button variant="secondary" className="px-3 py-1.5 text-xs">
                       Edit
                     </Button>
                   </Link>
-                  <Button variant="ghost" className="px-3 py-1.5 text-xs" onClick={() => onToggleStatus(product)}>
-                    {product.status === "AVAILABLE" ? "Mark Sold" : "Mark Available"}
-                  </Button>
                   <Button variant="danger" className="px-3 py-1.5 text-xs" onClick={() => onDelete(product)}>
                     Delete
                   </Button>
@@ -88,19 +105,13 @@ export function ProductTable({ products, onToggleStatus, onDelete }: ProductTabl
               </div>
               <StatusBadge status={product.status} />
             </div>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <StatusSelect product={product} onStatusChange={onStatusChange} />
               <Link to={`/admin/products/${product.id}/edit`} className="flex-1">
                 <Button variant="secondary" className="w-full px-3 py-1.5 text-xs">
                   Edit
                 </Button>
               </Link>
-              <Button
-                variant="ghost"
-                className="flex-1 px-3 py-1.5 text-xs"
-                onClick={() => onToggleStatus(product)}
-              >
-                {product.status === "AVAILABLE" ? "Mark Sold" : "Mark Available"}
-              </Button>
               <Button variant="danger" className="flex-1 px-3 py-1.5 text-xs" onClick={() => onDelete(product)}>
                 Delete
               </Button>

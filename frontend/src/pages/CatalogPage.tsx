@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { getProducts } from "../api/productsApi";
 import type { Page, Product } from "../types/product";
 import { ProductFilters, type CatalogFilters } from "../components/product/ProductFilters";
@@ -82,6 +83,15 @@ export function CatalogPage() {
             )}
           </>
         )}
+      </div>
+
+      <div className="mt-10 flex flex-col items-center gap-3 rounded-lg border border-vault-gold/20 bg-vault-gold/5 px-6 py-8 text-center">
+        <p className="text-sm text-vault-silver">
+          Can&apos;t find what you&apos;re looking for?
+        </p>
+        <Link to="/request">
+          <Button variant="secondary">Request a Device</Button>
+        </Link>
       </div>
     </div>
   );

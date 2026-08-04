@@ -82,6 +82,22 @@ export function HomePage() {
         </div>
       </section>
 
+      <section className="border-b border-vault-silver/10 bg-vault-black px-4 py-20 sm:px-6 sm:py-28">
+        <div className="mx-auto flex max-w-3xl flex-col items-center gap-10 text-center">
+          {/* Placeholder copy — swap this in later */}
+          <p className="text-xl leading-relaxed text-vault-white sm:text-2xl lg:text-3xl">
+            Got an old iPhone lying around? Want to sell it, trade it in, or upgrade to something
+            new? We&apos;ve got you covered with better prices and real warranties than anywhere
+            else you&apos;ve looked.
+          </p>
+          <Link to="/procedure" className="w-full sm:w-auto">
+            <Button className="w-full rounded-full px-10 py-4 text-sm sm:w-auto">
+              Learn How It Works
+            </Button>
+          </Link>
+        </div>
+      </section>
+
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
         <div className="mb-6 flex items-end justify-between">
           <h2 className="font-display text-2xl font-semibold text-vault-white">Latest Arrivals</h2>
