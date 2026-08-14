@@ -4,8 +4,7 @@ import { Button } from "../components/ui/Button";
 
 // Placeholder contact details — replace with your real numbers and names.
 const CONTACTS = [
-  { label: "0300-1234567 — Ahmad Tahseen" },
-  { label: "0300-7654321 — Support Team" },
+  { label: "0319-4787535 — Mobile Vault" }
 ];
 const INSTAGRAM_HANDLE = import.meta.env.VITE_INSTAGRAM_HANDLE as string;
 
