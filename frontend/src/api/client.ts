@@ -30,5 +30,8 @@ apiClient.interceptors.response.use(
 );
 
 export function imageUrl(path: string): string {
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    return path;
+  }
   return `${API_ORIGIN}${path}`;
 }

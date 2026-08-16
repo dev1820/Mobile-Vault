@@ -35,6 +35,6 @@ public class ProductMapper {
     }
 
     public ProductImageResponse toImageResponse(ProductImage image) {
-        return new ProductImageResponse(image.getId(), "/uploads/" + image.getFilePath(), image.getSortOrder());
+        return new ProductImageResponse(image.getId(), image.getFilePath(), image.getSortOrder());
     }
 }

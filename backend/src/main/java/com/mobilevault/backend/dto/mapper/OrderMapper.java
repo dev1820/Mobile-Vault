@@ -21,7 +21,7 @@ public class OrderMapper {
                 order.getDeliveryAddress(),
                 order.getDeliveryCity(),
                 order.getDeliveryNotes(),
-                "/uploads/" + order.getPaymentProofPath(),
+                order.getPaymentProofPath(),
                 order.getPaymentReference(),
                 order.getStatus(),
                 order.getCreatedAt(),

@@ -16,7 +16,7 @@ public class ComplaintMapper {
                 .map(this::toImageResponse)
                 .toList();
 
-        String videoUrl = complaint.getVideoPath() == null ? null : "/uploads/" + complaint.getVideoPath();
+        String videoUrl = complaint.getVideoPath();
 
         return new ComplaintResponse(
                 complaint.getId(),
@@ -35,6 +35,6 @@ public class ComplaintMapper {
     }
 
     public ComplaintImageResponse toImageResponse(ComplaintImage image) {
-        return new ComplaintImageResponse(image.getId(), "/uploads/" + image.getFilePath(), image.getSortOrder());
+        return new ComplaintImageResponse(image.getId(), image.getFilePath(), image.getSortOrder());
     }
 }

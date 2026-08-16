@@ -21,7 +21,10 @@ app:
   jwt:
     secret: ${JWT_SECRET}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
-  upload-dir: ${APP_UPLOAD_DIR:./uploads}
+  supabase:
+    url: ${SUPABASE_URL}
+    service-role-key: ${SUPABASE_SERVICE_ROLE_KEY}
+    storage-bucket: ${SUPABASE_STORAGE_BUCKET:uploads}
   cors:
     allowed-origins: ${ALLOWED_ORIGINS}
   admin-seed:

@@ -16,7 +16,7 @@ public class SellRequestMapper {
                 .map(this::toImageResponse)
                 .toList();
 
-        String videoUrl = sellRequest.getVideoPath() == null ? null : "/uploads/" + sellRequest.getVideoPath();
+        String videoUrl = sellRequest.getVideoPath();
 
         return new SellRequestResponse(
                 sellRequest.getId(),
@@ -43,6 +43,6 @@ public class SellRequestMapper {
     }
 
     public SellRequestImageResponse toImageResponse(SellRequestImage image) {
-        return new SellRequestImageResponse(image.getId(), "/uploads/" + image.getFilePath(), image.getSortOrder());
+        return new SellRequestImageResponse(image.getId(), image.getFilePath(), image.getSortOrder());
     }
 }

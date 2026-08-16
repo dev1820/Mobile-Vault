@@ -5,14 +5,14 @@ import com.mobilevault.backend.exception.FileStorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,15 +23,22 @@ public class ImageStorageService {
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "webp");
     private static final Set<String> ALLOWED_VIDEO_EXTENSIONS = Set.of("mp4", "mov", "m4v", "webm");
 
-    private final Path uploadRoot;
+    private final RestClient restClient;
+    private final String supabaseUrl;
+    private final String bucket;
 
-    public ImageStorageService(@Value("${app.upload-dir}") String uploadDir) {
-        this.uploadRoot = Paths.get(uploadDir).toAbsolutePath().normalize();
-        try {
-            Files.createDirectories(uploadRoot);
-        } catch (IOException e) {
-            throw new FileStorageException("Could not create upload directory: " + uploadRoot, e);
-        }
+    public ImageStorageService(
+            @Value("${app.supabase.url}") String supabaseUrl,
+            @Value("${app.supabase.service-role-key}") String serviceRoleKey,
+            @Value("${app.supabase.storage-bucket}") String bucket
+    ) {
+        this.supabaseUrl = supabaseUrl;
+        this.bucket = bucket;
+        this.restClient = RestClient.builder()
+                .baseUrl(supabaseUrl + "/storage/v1")
+                .defaultHeader("Authorization", "Bearer " + serviceRoleKey)
+                .defaultHeader("apikey", serviceRoleKey)
+                .build();
     }
 
     public String store(MultipartFile file, Long productId) {
@@ -67,31 +74,59 @@ public class ImageStorageService {
         }
 
         String storedFilename = UUID.randomUUID() + "." + extension;
-        String relativePath = subDir + "/" + storedFilename;
+        String objectPath = subDir + "/" + storedFilename;
 
         try {
-            Path targetPath = uploadRoot.resolve(relativePath).normalize();
-            if (!targetPath.startsWith(uploadRoot)) {
-                throw new BadRequestException("Invalid file path");
-            }
-            Files.createDirectories(targetPath.getParent());
-            Files.copy(file.getInputStream(), targetPath);
-            return relativePath;
+            byte[] bytes = file.getInputStream().readAllBytes();
+            restClient.post()
+                    .uri("/object/{bucket}/{path}", bucket, objectPath)
+                    .contentType(MediaType.parseMediaType(resolveContentType(extension)))
+                    .body(bytes)
+                    .retrieve()
+                    .toBodilessEntity();
+            return supabaseUrl + "/storage/v1/object/public/" + bucket + "/" + objectPath;
         } catch (IOException e) {
-            throw new FileStorageException("Failed to store file: " + originalFilename, e);
+            throw new FileStorageException("Failed to read uploaded file: " + originalFilename, e);
+        } catch (RestClientException e) {
+            throw new FileStorageException("Failed to upload file to storage: " + originalFilename, e);
         }
     }
 
-    public void delete(String relativePath) {
-        try {
-            Path targetPath = uploadRoot.resolve(relativePath).normalize();
-            if (!targetPath.startsWith(uploadRoot)) {
-                return;
-            }
-            Files.deleteIfExists(targetPath);
-        } catch (IOException e) {
-            log.warn("Failed to delete image file {}: {}", relativePath, e.getMessage());
+    public void delete(String fileUrl) {
+        String objectPath = extractObjectPath(fileUrl);
+        if (objectPath == null) {
+            return;
         }
+        try {
+            restClient.delete()
+                    .uri("/object/{bucket}/{path}", bucket, objectPath)
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (RestClientException e) {
+            log.warn("Failed to delete storage object {}: {}", objectPath, e.getMessage());
+        }
+    }
+
+    private String extractObjectPath(String fileUrl) {
+        String marker = "/storage/v1/object/public/" + bucket + "/";
+        int index = fileUrl.indexOf(marker);
+        if (index < 0) {
+            return null;
+        }
+        return fileUrl.substring(index + marker.length());
+    }
+
+    private String resolveContentType(String extension) {
+        return switch (extension) {
+            case "jpg", "jpeg" -> "image/jpeg";
+            case "png" -> "image/png";
+            case "webp" -> "image/webp";
+            case "mp4" -> "video/mp4";
+            case "mov" -> "video/quicktime";
+            case "m4v" -> "video/x-m4v";
+            case "webm" -> "video/webm";
+            default -> "application/octet-stream";
+        };
     }
 
     private String getExtension(String filename) {

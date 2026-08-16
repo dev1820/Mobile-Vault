@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { imageUrl } from "../../api/client";
+import { Lightbox } from "../ui/Lightbox";
 
 interface GalleryImage {
   id: number;
@@ -8,6 +9,7 @@ interface GalleryImage {
 
 export function ImageGallery({ images, alt }: { images: GalleryImage[]; alt: string }) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   if (images.length === 0) {
     return (
@@ -21,13 +23,17 @@ export function ImageGallery({ images, alt }: { images: GalleryImage[]; alt: str
 
   return (
     <div>
-      <div className="aspect-square overflow-hidden rounded-lg bg-vault-charcoal">
+      <button
+        type="button"
+        onClick={() => setLightboxOpen(true)}
+        className="block aspect-square w-full cursor-zoom-in overflow-hidden rounded-lg bg-vault-charcoal"
+      >
         <img
           src={imageUrl(active.url)}
           alt={alt}
           className="h-full w-full snap-center object-cover"
         />
-      </div>
+      </button>
       {images.length > 1 && (
         <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
           {images.map((image, index) => (
@@ -43,6 +49,15 @@ export function ImageGallery({ images, alt }: { images: GalleryImage[]; alt: str
             </button>
           ))}
         </div>
+      )}
+      {lightboxOpen && (
+        <Lightbox
+          images={images}
+          activeIndex={activeIndex}
+          alt={alt}
+          onClose={() => setLightboxOpen(false)}
+          onNavigate={setActiveIndex}
+        />
       )}
     </div>
   );
