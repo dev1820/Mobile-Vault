@@ -23,7 +23,7 @@ app:
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   upload-dir: ${APP_UPLOAD_DIR:./uploads}
   cors:
-    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173}
+    allowed-origins: ${ALLOWED_ORIGINS}
   admin-seed:
     username: ${ADMIN_SEED_USERNAME:}
     password: ${ADMIN_SEED_PASSWORD:}
